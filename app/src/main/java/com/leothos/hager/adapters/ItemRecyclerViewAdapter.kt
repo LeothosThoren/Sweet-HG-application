@@ -1,4 +1,4 @@
-package com.leothos.hager
+package com.leothos.hager.adapters
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,15 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.leothos.hager.ui.ItemDetailActivity
+import com.leothos.hager.ui.ItemDetailFragment
+import com.leothos.hager.ui.ItemListActivity
+import com.leothos.hager.R
 import com.leothos.hager.dummy.DummyContent
 import kotlinx.android.synthetic.main.item_list_content.view.*
 
-class SimpleItemRecyclerViewAdapter(
+class ItemRecyclerViewAdapter(
     private val parentActivity: ItemListActivity,
     private val values: List<DummyContent.DummyItem>,
     private val twoPane: Boolean
 ) :
-    RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder>() {
+    RecyclerView.Adapter<ItemRecyclerViewAdapter.ViewHolder>() {
 
     private val onClickListener: View.OnClickListener
 

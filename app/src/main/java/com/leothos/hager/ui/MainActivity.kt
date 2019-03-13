@@ -1,4 +1,4 @@
-package com.leothos.hager
+package com.leothos.hager.ui
 
 import android.app.DatePickerDialog
 import android.graphics.Color
@@ -8,8 +8,15 @@ import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import com.leothos.hager.*
+import com.leothos.hager.model.DataItem
+import com.leothos.hager.view_models.ProductsViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import java.text.SimpleDateFormat
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -23,6 +30,10 @@ class MainActivity : AppCompatActivity() {
     private var countryValue = DEFAULT_COUNTRY_VALUE
     private var lastSyncValue = DEFAULT_LAST_SYNC_VALUE
 
+    private val api: Api by lazy {
+        RetrofitClient.apiService
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -31,6 +42,7 @@ class MainActivity : AppCompatActivity() {
         configureSpinner()
         datePicker.setOnClickListener { configureDatePickerDialog() }
         openCalendarWidget()
+        configureViewModel()
     }
 
 
@@ -38,24 +50,35 @@ class MainActivity : AppCompatActivity() {
     // Action
     // --------------
 
-    fun openCalendarWidget() {
+    /**
+     * openCalendarWidget method allows the user to select a date in the DatePickerDialog widget
+     *
+     * */
+    private fun openCalendarWidget() {
         selectionDateListener = DatePickerDialog.OnDateSetListener { v, year, month, dayOfMonth ->
-            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+
             calendar.set(year, month, dayOfMonth)
 
-            lastSyncValue = sdf.format(calendar.time)
+            lastSyncValue = dateFormatter(calendar)
             countryValue = spinner.selectedItem.toString()
 
-            Log.d(TAG, "current date and time = $lastSyncValue")
-            textInfo.text = getString(R.string.info_message, countryValue, lastSyncValue)
+            textInfo.text = getString(
+                R.string.info_message, countryValue, dateFormatter2(calendar)
+            )
         }
     }
 
 
+    /**
+     * This method checks two things, the values retrieve from the widget
+     * It can launch an api call and load the data
+     * if the data return null or is empty a notification (toast) will alert the user
+     * */
     fun callWebService(view: View) {
         toast("CallWebService ok")
+        fetchWebService(countryValue, lastSyncValue)
+        Log.d(TAG, "country = $countryValue and last sync = $lastSyncValue")
     }
-
 
     // --------------
     // Config
@@ -88,5 +111,29 @@ class MainActivity : AppCompatActivity() {
         dateDialog.show()
     }
 
+    // Configure viewModel in order to fetch data once and prevent multiple call
+    private fun configureViewModel() {
+        val model = ViewModelProviders.of(this).get(ProductsViewModel::class.java)
+        model.getProducts(countryValue, lastSyncValue).observe(this, Observer<DataItem> {
+            Log.d(TAG, it.brand.toString())
+        })
+    }
+
+    private fun fetchWebService(countryZone: String, lastSync: String) {
+        api.getProducts(countryZone, lastSync).enqueue(object : Callback<DataItem> {
+            override fun onFailure(call: Call<DataItem>, t: Throwable) {
+                toast("Error ${t.toString()}")
+            }
+
+            override fun onResponse(call: Call<DataItem>, response: Response<DataItem>) {
+                if (response.isSuccessful) {
+                    Log.d(TAG, "fetched response = ${response.body()}")
+                } else {
+                    Log.i(TAG, "Error ${response.errorBody()}")
+                }
+            }
+
+        })
+    }
 }
 

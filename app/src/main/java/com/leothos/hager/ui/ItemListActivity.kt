@@ -1,9 +1,11 @@
-package com.leothos.hager
+package com.leothos.hager.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import com.leothos.hager.R
+import com.leothos.hager.adapters.ItemRecyclerViewAdapter
 import com.leothos.hager.dummy.DummyContent
 import kotlinx.android.synthetic.main.activity_item_list.*
 import kotlinx.android.synthetic.main.item_list.*
@@ -48,7 +50,7 @@ class ItemListActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
-        recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, twoPane)
+        recyclerView.adapter = ItemRecyclerViewAdapter(this, DummyContent.ITEMS, twoPane)
     }
 
 }
