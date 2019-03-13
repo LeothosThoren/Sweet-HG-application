@@ -4,9 +4,9 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.leothos.hager.web_services.Api
 import com.leothos.hager.BASE_URL
 import com.leothos.hager.model.DataItem
+import com.leothos.hager.web_services.Api
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -18,10 +18,11 @@ class ProductsViewModel : ViewModel() {
     val TAG = this::class.java.simpleName
 
     //Two parameters necessary to call the api
-    private lateinit var country: String
-    private lateinit var lastSync: String
+    var country: String = ""
+    var lastSync: String = ""
     //This is the data that will fetch asynchronously
-    private var productList = MutableLiveData<com.leothos.hager.model.Response>()
+    var productList = MutableLiveData<com.leothos.hager.model.Response>()
+    var data = ArrayList<DataItem>()
 
     /**
      * This is the method which will be called to fetch the data
@@ -53,9 +54,13 @@ class ProductsViewModel : ViewModel() {
                 Log.e(TAG, t.toString())
             }
 
-            override fun onResponse(call: Call<com.leothos.hager.model.Response>, response: Response<com.leothos.hager.model.Response>) {
-                productList.value = response.body()
+            override fun onResponse(
+                call: Call<com.leothos.hager.model.Response>,
+                response: Response<com.leothos.hager.model.Response>
+            ) {
+                productList.value = response.body()?.data as com.leothos.hager.model.Response
                 Log.i(TAG, productList.value.toString())
+
             }
         })
 

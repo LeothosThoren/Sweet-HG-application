@@ -1,16 +1,21 @@
 package com.leothos.hager.ui
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.leothos.hager.*
+import com.leothos.hager.model.DataItem
 import com.leothos.hager.view_models.ProductsViewModel
 import com.leothos.hager.web_services.Api
 import com.leothos.hager.web_services.RetrofitClient
@@ -27,6 +32,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var spinnerAdapter: ArrayAdapter<CharSequence>
     private lateinit var selectionDateListener: DatePickerDialog.OnDateSetListener
     private lateinit var calendar: Calendar
+    private lateinit var model: ProductsViewModel
+    private lateinit var list: List<DataItem>
     //Default values if the user click directly on Ok button
     private var countryValue = DEFAULT_COUNTRY_VALUE
     private var lastSyncValue = DEFAULT_LAST_SYNC_VALUE
@@ -74,12 +81,17 @@ class MainActivity : AppCompatActivity() {
      * This method checks two things, the values retrieve from the widget
      * It can launch an api call and load the data
      * if the data return null or is empty a notification (toast) will alert the user
+     * And open a naw activity to display a list of product
      * */
     fun callWebService(view: View) {
-        toast("CallWebService ok")
         Log.d(TAG, "country = $countryValue and last sync = $lastSyncValue")
-
+        configureProgressBar()
         fetchWebService(countryValue, lastSyncValue)
+    }
+
+    private fun startActivity() {
+        val i = Intent(this, ItemListActivity::class.java)
+        startActivity(i)
     }
 
     // --------------
@@ -122,11 +134,21 @@ class MainActivity : AppCompatActivity() {
 
     // Configure viewModel in order to fetch data once and prevent multiple call
     private fun configureViewModel() {
-        val model = ViewModelProviders.of(this).get(ProductsViewModel::class.java)
+        model = ViewModelProviders.of(this).get(ProductsViewModel::class.java)
         model.getProducts(countryValue, lastSyncValue).observe(this, Observer<com.leothos.hager.model.Response> {
             Log.d(TAG, it.data.toString())
         })
     }
+
+    private fun configureProgressBar() {
+        progressBar.visibility = View.VISIBLE
+        progressBar.indeterminateDrawable
+            .setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_IN)
+    }
+
+    // --------------
+    // Retrofit
+    // --------------
 
     /**
      * fetchWebService method fetch data from web service, it takes two parameters
@@ -148,9 +170,15 @@ class MainActivity : AppCompatActivity() {
                 response: Response<com.leothos.hager.model.Response>
             ) {
                 when {
-                    response.isSuccessful -> Log.d(TAG, "fetched response = ${response.body()}")
-                    else -> toast(getString(R.string.no_data_found))
+                    response.isSuccessful -> {
+                        Log.d(TAG, "fetched response = ${response.body()}")
+                        list = response.body()?.data as List<DataItem>
+                        if (list.isEmpty()) toast(getString(R.string.no_data_found))
+                        else model.data = list as ArrayList<DataItem>
+                        startActivity()
+                    }
                 }
+                progressBar.visibility = View.GONE
             }
 
         })

@@ -5,19 +5,25 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.RequestManager
+import com.bumptech.glide.request.RequestOptions
+import com.leothos.hager.PICTURE_URL
+import com.leothos.hager.R
+import com.leothos.hager.model.DataItem
+import com.leothos.hager.model.Response
 import com.leothos.hager.ui.ItemDetailActivity
 import com.leothos.hager.ui.ItemDetailFragment
 import com.leothos.hager.ui.ItemListActivity
-import com.leothos.hager.R
-import com.leothos.hager.dummy.DummyContent
 import kotlinx.android.synthetic.main.item_list_content.view.*
 
 class ItemRecyclerViewAdapter(
     private val parentActivity: ItemListActivity,
-    private val values: List<DummyContent.DummyItem>,
-    private val twoPane: Boolean
+    private val productValues: List<DataItem>,
+    private val twoPane: Boolean,
+    private val glide: RequestManager
 ) :
     RecyclerView.Adapter<ItemRecyclerViewAdapter.ViewHolder>() {
 
@@ -25,11 +31,11 @@ class ItemRecyclerViewAdapter(
 
     init {
         onClickListener = View.OnClickListener { v ->
-            val item = v.tag as DummyContent.DummyItem
+            val item = v.tag as Response
             if (twoPane) {
                 val fragment = ItemDetailFragment().apply {
                     arguments = Bundle().apply {
-                        putString(ItemDetailFragment.ARG_ITEM_ID, item.id)
+                        putString(ItemDetailFragment.ARG_ITEM_ID, item.data?.get(0)?.reference)
                     }
                 }
                 parentActivity.supportFragmentManager
@@ -38,7 +44,7 @@ class ItemRecyclerViewAdapter(
                     .commit()
             } else {
                 val intent = Intent(v.context, ItemDetailActivity::class.java).apply {
-                    putExtra(ItemDetailFragment.ARG_ITEM_ID, item.id)
+                    putExtra(ItemDetailFragment.ARG_ITEM_ID, item.data?.get(0)?.reference)
                 }
                 v.context.startActivity(intent)
             }
@@ -52,9 +58,13 @@ class ItemRecyclerViewAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = values[position]
-        holder.idView.text = item.id
-        holder.contentView.text = item.content
+        val item = productValues[position]
+        holder.let {
+            holder.reference.text = item.reference
+            holder.shortDescription.text = item.shortDescriptions?.get(0)?.value
+            glide.load("$PICTURE_URL${item.reference}.webp")
+                .apply(RequestOptions().centerCrop()).into(holder.picture)
+        }
 
         with(holder.itemView) {
             tag = item
@@ -62,10 +72,11 @@ class ItemRecyclerViewAdapter(
         }
     }
 
-    override fun getItemCount() = values.size
+    override fun getItemCount() = productValues.size
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val idView: TextView = view.id_text
-        val contentView: TextView = view.content
+        val reference: TextView = view.reference
+        val shortDescription: TextView = view.shortDescription
+        val picture: ImageView = view.picture
     }
 }
