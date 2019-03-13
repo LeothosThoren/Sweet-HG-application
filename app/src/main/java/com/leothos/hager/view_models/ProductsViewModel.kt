@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.leothos.hager.Api
+import com.leothos.hager.web_services.Api
 import com.leothos.hager.BASE_URL
 import com.leothos.hager.model.DataItem
 import retrofit2.Call
@@ -21,12 +21,12 @@ class ProductsViewModel : ViewModel() {
     private lateinit var country: String
     private lateinit var lastSync: String
     //This is the data that will fetch asynchronously
-    private var productList = MutableLiveData<DataItem>()
+    private var productList = MutableLiveData<com.leothos.hager.model.Response>()
 
     /**
      * This is the method which will be called to fetch the data
      */
-    fun getProducts(country: String, lastSync: String): LiveData<DataItem> {
+    fun getProducts(country: String, lastSync: String): LiveData<com.leothos.hager.model.Response> {
         if (productList == null) {
             productList = MutableLiveData()
 
@@ -48,13 +48,14 @@ class ProductsViewModel : ViewModel() {
         val api = retrofit.create(Api::class.java)
         val call = api.getProducts(country, lastSync)
 
-        call.enqueue(object : Callback<DataItem> {
-            override fun onFailure(call: Call<DataItem>, t: Throwable) {
+        call.enqueue(object : Callback<com.leothos.hager.model.Response> {
+            override fun onFailure(call: Call<com.leothos.hager.model.Response>, t: Throwable) {
                 Log.e(TAG, t.toString())
             }
 
-            override fun onResponse(call: Call<DataItem>, response: Response<DataItem>) {
+            override fun onResponse(call: Call<com.leothos.hager.model.Response>, response: Response<com.leothos.hager.model.Response>) {
                 productList.value = response.body()
+                Log.i(TAG, productList.value.toString())
             }
         })
 

@@ -11,8 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.leothos.hager.*
-import com.leothos.hager.model.DataItem
 import com.leothos.hager.view_models.ProductsViewModel
+import com.leothos.hager.web_services.Api
+import com.leothos.hager.web_services.RetrofitClient
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -76,14 +77,18 @@ class MainActivity : AppCompatActivity() {
      * */
     fun callWebService(view: View) {
         toast("CallWebService ok")
-        fetchWebService(countryValue, lastSyncValue)
         Log.d(TAG, "country = $countryValue and last sync = $lastSyncValue")
+
+        fetchWebService(countryValue, lastSyncValue)
     }
 
     // --------------
     // Config
     // --------------
 
+    /**
+     * A simple configuration of a spinner object in order to help the user to select an item
+     * */
     private fun configureSpinner() {
         spinnerAdapter = ArrayAdapter.createFromResource(
             this,
@@ -95,6 +100,10 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * This method create an instance of Calendar and DatePickerDialog objects
+     * The goal is to prepare and prompt a widget to the user who can select a date within
+     * */
     private fun configureDatePickerDialog() {
         calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
@@ -114,22 +123,33 @@ class MainActivity : AppCompatActivity() {
     // Configure viewModel in order to fetch data once and prevent multiple call
     private fun configureViewModel() {
         val model = ViewModelProviders.of(this).get(ProductsViewModel::class.java)
-        model.getProducts(countryValue, lastSyncValue).observe(this, Observer<DataItem> {
-            Log.d(TAG, it.brand.toString())
+        model.getProducts(countryValue, lastSyncValue).observe(this, Observer<com.leothos.hager.model.Response> {
+            Log.d(TAG, it.data.toString())
         })
     }
 
+    /**
+     * fetchWebService method fetch data from web service, it takes two parameters
+     * which correspond to the url query.
+     * It handles some cases like a null body or a connectivity problem, the user is warned in each cases
+     *
+     * @param countryZone
+     * @param lastSync
+     * */
     private fun fetchWebService(countryZone: String, lastSync: String) {
-        api.getProducts(countryZone, lastSync).enqueue(object : Callback<DataItem> {
-            override fun onFailure(call: Call<DataItem>, t: Throwable) {
-                toast("Error ${t.toString()}")
+        api.getProducts(countryZone, lastSync).enqueue(object : Callback<com.leothos.hager.model.Response> {
+            override fun onFailure(call: Call<com.leothos.hager.model.Response>, t: Throwable) {
+                Log.i(TAG, "Error ${t.message}")
+                toast(getString(R.string.connectivity_problem))
             }
 
-            override fun onResponse(call: Call<DataItem>, response: Response<DataItem>) {
-                if (response.isSuccessful) {
-                    Log.d(TAG, "fetched response = ${response.body()}")
-                } else {
-                    Log.i(TAG, "Error ${response.errorBody()}")
+            override fun onResponse(
+                call: Call<com.leothos.hager.model.Response>,
+                response: Response<com.leothos.hager.model.Response>
+            ) {
+                when {
+                    response.isSuccessful -> Log.d(TAG, "fetched response = ${response.body()}")
+                    else -> toast(getString(R.string.no_data_found))
                 }
             }
 

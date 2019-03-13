@@ -1,5 +1,6 @@
-package com.leothos.hager
+package com.leothos.hager.web_services
 
+import com.leothos.hager.BASE_URL
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -10,5 +11,6 @@ object RetrofitClient {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    val apiService: Api = retrofit.create(Api::class.java)
+    val apiService: Api = retrofit.create(
+        Api::class.java)
 }

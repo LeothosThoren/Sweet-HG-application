@@ -1,12 +1,19 @@
 package com.leothos.hager.model
 
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
+
 data class Response(
-	val newProductPrices: NewProductPrices? = null,
-	val deletedIds: List<Int?>? = null,
-	val getDeletedInSeconds: Double? = null,
+	@field:SerializedName("Data")
+    @Expose
 	val data: List<DataItem?>? = null,
-	val getDataInSeconds: Double? = null,
+	@field:SerializedName("LastSync")
+    @Expose
 	val lastSync: String? = null,
+	@field:SerializedName("ErrorMessage")
+    @Expose
 	val errorMessage: Any? = null,
+    @field:SerializedName("HasError")
+    @Expose
 	val hasError: Boolean? = null
 )

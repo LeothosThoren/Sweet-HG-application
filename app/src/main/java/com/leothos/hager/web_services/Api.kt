@@ -1,6 +1,6 @@
-package com.leothos.hager
+package com.leothos.hager.web_services
 
-import com.leothos.hager.model.DataItem
+import com.leothos.hager.model.Response
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -15,5 +15,5 @@ interface Api {
     fun getProducts(
         @Query("country") country: String,
         @Query("lastsync") lastsync: String
-    ): Call<DataItem>
+    ): Call<Response>
 }

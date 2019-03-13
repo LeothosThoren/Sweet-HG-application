@@ -2,6 +2,6 @@
     <string name="app_name">Hager</string>
     <string name="title_item_detail">Item Detail</string>
     <string name="info_message">Country zone: %1$s\n\nDate and time: %2$s</string>
-    <string name="connectivity_problem">Your terminal is not currently connected t/o Internet, or your connection is very poor.\n\nPlease, check your connection and try again.</string>
+    <string name="connectivity_problem">Your terminal is not currently connected to Internet, or your connection is very poor.\nPlease, check your connection and try again.</string>
     <string name="no_data_found">Your current selection is not correct, please update it!</string>
 </resources>
