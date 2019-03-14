@@ -6,4 +6,11 @@
     <string name="no_data_found">Your current selection is not correct, please update it!</string>
     <string name="access_to_favorites">Access to the favorites</string>
     <string name="add_to_favorite">ADD TO FAVORITE</string>
+    <string name="toolbar_title_list_of_products">List of products</string>
+    <string name="toolbar_detail_activity_title">Product details</string>
+    <string name="brand">brand</string>
+    <string name="price">price</string>
+    <string name="reference">reference</string>
+    <string name="description">description</string>
+    <string name="ean">Ean</string>
 </resources>

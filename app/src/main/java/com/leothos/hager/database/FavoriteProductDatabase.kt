@@ -11,7 +11,7 @@ import com.leothos.hager.model.entities.FavoriteProduct
 abstract class FavoriteProductDatabase : RoomDatabase() {
 
     // --- DAO ---
-    abstract fun myProductDao(): FavoriteProductDao
+    abstract fun favoriteProductDao(): FavoriteProductDao
 
     companion object {
 
@@ -27,8 +27,7 @@ abstract class FavoriteProductDatabase : RoomDatabase() {
                         INSTANCE = Room.databaseBuilder(
                             context.applicationContext,
                             FavoriteProductDatabase::class.java, "HGDatabase.db"
-                        )
-                            .build()
+                        ).build()
                     }
                 }
             }

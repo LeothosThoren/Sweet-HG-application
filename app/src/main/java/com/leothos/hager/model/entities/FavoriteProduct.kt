@@ -10,8 +10,9 @@ data class FavoriteProduct(
     @PrimaryKey
     @NonNull
     val referenceId: String,
-    val brand: String,
-    val description: String,
-    val price: Double,
-    val eAN: String
+    var brand: String?,
+    val description: String?,
+    val price: Double?,
+    val currency: String?,
+    val eAN: String?
 )

@@ -1,7 +1,6 @@
 package com.leothos.hager.ui
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,7 +12,6 @@ import com.leothos.hager.adapters.ItemRecyclerViewAdapter
 import com.leothos.hager.data.DataManager
 import com.leothos.hager.model.api.ApiProductItem
 import com.leothos.hager.toast
-import com.leothos.hager.view_models.FavoriteProductViewModel
 import com.leothos.hager.view_models.ProductsViewModel
 import kotlinx.android.synthetic.main.activity_item_list.*
 import kotlinx.android.synthetic.main.item_list.*
@@ -37,7 +35,6 @@ ItemRecyclerViewAdapter.OnItemSelectedListener{
     private var twoPane: Boolean = false
     private var dataItem = DataManager.dataItems
     private lateinit var model: ProductsViewModel
-    private lateinit var favoriteProductViewModel: FavoriteProductViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,9 +42,9 @@ ItemRecyclerViewAdapter.OnItemSelectedListener{
         setContentView(R.layout.activity_item_list)
         configureViewModel()
         setSupportActionBar(toolbar)
-        toolbar.title = title
+        toolbar.title = getString(R.string.toolbar_title_list_of_products)
 
-        fab.setOnClickListener { view ->
+        detailFab.setOnClickListener { view ->
             Snackbar.make(view, getString(R.string.access_to_favorites), Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }

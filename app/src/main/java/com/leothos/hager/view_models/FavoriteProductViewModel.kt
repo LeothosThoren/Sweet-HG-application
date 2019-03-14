@@ -7,31 +7,34 @@ import com.leothos.hager.repository.FavoriteProductDataRepository
 import java.util.concurrent.Executor
 
 
-class FavoriteProductViewModel(// REPOSITORY
-    private val productDataRepository: FavoriteProductDataRepository, private val mExecutor: Executor
+class FavoriteProductViewModel(
+    private val productDataRepository: FavoriteProductDataRepository,
+    private val executor: Executor
 ) : ViewModel() {
 
     // --- GET ---
 
-    fun getAllFavoriteProducts(): LiveData<List<FavoriteProduct>> = productDataRepository.getAllFavoriteProducts()
+    fun getAllFavoriteProducts(): LiveData<List<FavoriteProduct>> {
+        return productDataRepository.getAllFavoriteProducts()
+    }
 
 
     // --- CREATE ---
 
-    fun insertFavoriteProduct(myProduct: FavoriteProduct) {
-        mExecutor.execute { productDataRepository.insertFavoriteProduct(myProduct) }
+    fun insertFavoriteProduct(favoriteProduct: FavoriteProduct) {
+        executor.execute { productDataRepository.insertFavoriteProduct(favoriteProduct) }
     }
 
     // --- UPDATE ---
 
-    fun updateFavoriteProduct(myProduct: FavoriteProduct) {
-        mExecutor.execute { productDataRepository.updateFavoriteProduct(myProduct) }
+    fun updateFavoriteProduct(favoriteProduct: FavoriteProduct) {
+        executor.execute { productDataRepository.updateFavoriteProduct(favoriteProduct) }
     }
 
     // --- DELETE ---
 
     fun deleteFavoriteProduct(referenceId: String) {
-        mExecutor.execute { productDataRepository.deleteFavoriteProduct(referenceId) }
+        executor.execute { productDataRepository.deleteFavoriteProduct(referenceId) }
     }
 
 }
