@@ -5,4 +5,5 @@
     <string name="connectivity_problem">Your terminal is not currently connected to Internet, or your connection is very poor.\nPlease, check your connection and try again.</string>
     <string name="no_data_found">Your current selection is not correct, please update it!</string>
     <string name="access_to_favorites">Access to the favorites</string>
+    <string name="add_to_favorite">ADD TO FAVORITE</string>
 </resources>

@@ -1,40 +1,44 @@
 package com.leothos.hager.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.leothos.hager.PICTURE_URL
 import com.leothos.hager.R
-import com.leothos.hager.data.DummyContent
-import kotlinx.android.synthetic.main.activity_item_detail.*
-import kotlinx.android.synthetic.main.item_detail.view.*
+import com.leothos.hager.data.DataManager
+import com.leothos.hager.model.api.ApiProductItem
+import kotlinx.android.synthetic.main.item_detail.*
 
-/**
- * A fragment representing a single Item detail screen.
- * This fragment is either contained in a [ItemListActivity]
- * in two-pane mode (on tablets) or a [ItemDetailActivity]
- * on handsets.
- */
+
 class ItemDetailFragment : Fragment() {
 
-    /**
-     * The dummy content this fragment is presenting.
-     */
-    private var item: DummyContent.DummyItem? = null
+    private var productItem: ApiProductItem? = null
+    private val TAG = this::class.java.simpleName
+
+    companion object {
+        /**
+         * The fragment argument representing the item Position that this fragment
+         * represents.
+         */
+        const val ARG_ITEM_POS = "item_position"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        //Retrieve data from activity
         arguments?.let {
-            if (it.containsKey(ARG_ITEM_ID)) {
-                // Load the dummy content specified by the fragment
-                // arguments. In a real-world scenario, use a Loader
-                // to load content from a content provider.
-                item = DummyContent.ITEM_MAP[it.getString(ARG_ITEM_ID)]
-                activity?.toolbar_layout?.title = item?.content
+            if (it.containsKey(ARG_ITEM_POS)) {
+                val pos = it.getInt(ARG_ITEM_POS)
+                productItem = DataManager.dataItems[pos]
             }
         }
+        Log.d(TAG, productItem?.reference)
     }
 
     override fun onCreateView(
@@ -42,20 +46,31 @@ class ItemDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.item_detail, container, false)
-
-        // Show the dummy content as text in a TextView.
-        item?.let {
-            rootView.item_detail.text = it.details
-        }
-
         return rootView
     }
 
-    companion object {
-        /**
-         * The fragment argument representing the item ID that this fragment
-         * represents.
-         */
-        const val ARG_ITEM_ID = "item_id"
+    override fun onResume() {
+        super.onResume()
+        updateUI()
+    }
+
+    // ----------
+    // UI
+    // ----------
+
+    /**
+     * This method bind the data to the detail view in order to display information from the data
+     *
+     * */
+    private fun updateUI() {
+        detailBrand.text = productItem?.brand
+        detailPrice.text = "${productItem?.price} ${productItem?.priceCurrency}"
+        detailReference.text = productItem?.reference
+        detailEAN.text = productItem?.eAN
+        detailLongDescription.text = productItem?.descriptions?.get(0)?.value
+        Glide.with(this)
+            .load("$PICTURE_URL${productItem?.reference}.webp")
+            .apply(RequestOptions.centerInsideTransform())
+            .into(detailImage)
     }
 }

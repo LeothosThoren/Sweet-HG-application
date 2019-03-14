@@ -11,6 +11,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.leothos.hager.R
 import com.leothos.hager.adapters.ItemRecyclerViewAdapter
 import com.leothos.hager.data.DataManager
+import com.leothos.hager.model.api.ApiProductItem
+import com.leothos.hager.toast
 import com.leothos.hager.view_models.ProductsViewModel
 import kotlinx.android.synthetic.main.activity_item_list.*
 import kotlinx.android.synthetic.main.item_list.*
@@ -23,9 +25,10 @@ import kotlinx.android.synthetic.main.item_list.*
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-class ItemListActivity : AppCompatActivity() {
+class ItemListActivity : AppCompatActivity(),
+ItemRecyclerViewAdapter.OnItemSelectedListener{
 
-    /**
+        /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
@@ -59,9 +62,9 @@ class ItemListActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
-        Log.d(TAG, "show dataItem list = $dataItem")
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = ItemRecyclerViewAdapter(this, dataItem, twoPane, Glide.with(this))
+        recyclerView.adapter =
+            ItemRecyclerViewAdapter(this, dataItem, twoPane, Glide.with(this),this)
     }
 
     private fun configureViewModel() {
@@ -72,5 +75,9 @@ class ItemListActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         item_list.adapter?.notifyDataSetChanged()
+    }
+
+    override fun onItemSelected(productItem: ApiProductItem) {
+        toast("The product with the reference ${productItem.reference} is selected")
     }
 }

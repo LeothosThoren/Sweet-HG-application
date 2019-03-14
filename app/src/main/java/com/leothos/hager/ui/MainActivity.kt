@@ -64,7 +64,6 @@ class MainActivity : AppCompatActivity() {
      * */
     private fun openCalendarWidget() {
         selectionDateListener = DatePickerDialog.OnDateSetListener { v, year, month, dayOfMonth ->
-
             calendar.set(year, month, dayOfMonth)
             lastSyncValue = dateFormatterEn(calendar)
 
@@ -181,7 +180,7 @@ class MainActivity : AppCompatActivity() {
             ) {
                 when {
                     apiProductsResponse.isSuccessful -> {
-                        Log.d(TAG, "fetched response = ${apiProductsResponse.body()}")
+                        Log.d(TAG, "fetched response = ${apiProductsResponse.body()?.data?.get(0)}")
                         DataManager.dataItems = apiProductsResponse.body()?.data as ArrayList<ApiProductItem>
                         if (DataManager.dataItems.isEmpty()) toast(getString(R.string.no_data_found))
                         else startActivity()
