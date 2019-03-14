@@ -1,12 +1,12 @@
-package com.leothos.hager.model
+package com.leothos.hager.model.api
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-data class Response(
+data class ApiProductsResponse(
     @field:SerializedName("Data")
     @Expose
-    val data: List<DataItem?>? = null,
+    val data: List<ApiProductItem?>? = null,
     @field:SerializedName("LastSync")
     @Expose
     val lastSync: String? = null,

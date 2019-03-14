@@ -1,9 +1,9 @@
-package com.leothos.hager.model
+package com.leothos.hager.model.api
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-data class ShortDescriptionsItem(
+data class ApiDescriptionsItem(
     @field:SerializedName("Language")
     @Expose
     val language: Int? = null,

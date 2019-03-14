@@ -1,9 +1,9 @@
-package com.leothos.hager.model
+package com.leothos.hager.model.api
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-data class DataItem(
+data class ApiProductItem(
     @field:SerializedName("CategoryId")
     @Expose
     val categoryId: Int? = null,
@@ -42,10 +42,10 @@ data class DataItem(
     val priceQuantity: Int? = null,
     @field:SerializedName("Descriptions")
     @Expose
-    val descriptions: List<DescriptionsItem?>? = null,
+    val descriptions: List<ApiDescriptionsItem?>? = null,
     @field:SerializedName("ShortDescriptions")
     @Expose
-    val shortDescriptions: List<ShortDescriptionsItem?>? = null,
+    val shortDescriptions: List<ApiShortDescriptionsItem?>? = null,
     @field:SerializedName("EAN")
     @Expose
     val eAN: String? = null,

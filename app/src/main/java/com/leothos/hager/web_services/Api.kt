@@ -1,6 +1,6 @@
 package com.leothos.hager.web_services
 
-import com.leothos.hager.model.Response
+import com.leothos.hager.model.api.ApiProductsResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -15,5 +15,5 @@ interface Api {
     fun getProducts(
         @Query("country") country: String,
         @Query("lastsync") lastsync: String
-    ): Call<Response>
+    ): Call<ApiProductsResponse>
 }

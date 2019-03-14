@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
@@ -15,7 +14,9 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.leothos.hager.*
-import com.leothos.hager.model.DataItem
+import com.leothos.hager.data.DataManager
+import com.leothos.hager.model.api.ApiProductItem
+import com.leothos.hager.model.api.ApiProductsResponse
 import com.leothos.hager.view_models.ProductsViewModel
 import com.leothos.hager.web_services.Api
 import com.leothos.hager.web_services.RetrofitClient
@@ -33,7 +34,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var selectionDateListener: DatePickerDialog.OnDateSetListener
     private lateinit var calendar: Calendar
     private lateinit var model: ProductsViewModel
-    private lateinit var list: List<DataItem>
     //Default values if the user click directly on Ok button
     private var countryValue = DEFAULT_COUNTRY_VALUE
     private var lastSyncValue = DEFAULT_LAST_SYNC_VALUE
@@ -66,13 +66,10 @@ class MainActivity : AppCompatActivity() {
         selectionDateListener = DatePickerDialog.OnDateSetListener { v, year, month, dayOfMonth ->
 
             calendar.set(year, month, dayOfMonth)
+            lastSyncValue = dateFormatterEn(calendar)
 
-            lastSyncValue = dateFormatter(calendar)
-            countryValue = spinner.selectedItem.toString()
-
-            textInfo.text = getString(
-                R.string.info_message, countryValue, dateFormatter2(calendar)
-            )
+            //To show data after the selection
+            updateTextView()
         }
     }
 
@@ -85,13 +82,32 @@ class MainActivity : AppCompatActivity() {
      * */
     fun callWebService(view: View) {
         Log.d(TAG, "country = $countryValue and last sync = $lastSyncValue")
-        configureProgressBar()
+        updateTextView()
+        handleProgressBar()
         fetchWebService(countryValue, lastSyncValue)
     }
 
     private fun startActivity() {
         val i = Intent(this, ItemListActivity::class.java)
         startActivity(i)
+    }
+
+    // --------------
+    // UI
+    // --------------
+
+    private fun updateTextView() {
+        countryValue = spinner.selectedItem.toString()
+        textInfo.text = getString(
+            R.string.info_message, countryValue, dateFormatterFR(lastSyncValue)
+        )
+    }
+
+
+    private fun handleProgressBar() {
+        progressBar.visibility = View.VISIBLE
+        progressBar.indeterminateDrawable
+            .setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_IN)
     }
 
     // --------------
@@ -135,15 +151,9 @@ class MainActivity : AppCompatActivity() {
     // Configure viewModel in order to fetch data once and prevent multiple call
     private fun configureViewModel() {
         model = ViewModelProviders.of(this).get(ProductsViewModel::class.java)
-        model.getProducts(countryValue, lastSyncValue).observe(this, Observer<com.leothos.hager.model.Response> {
+        model.getProducts(countryValue, lastSyncValue).observe(this, Observer<ApiProductsResponse> {
             Log.d(TAG, it.data.toString())
         })
-    }
-
-    private fun configureProgressBar() {
-        progressBar.visibility = View.VISIBLE
-        progressBar.indeterminateDrawable
-            .setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_IN)
     }
 
     // --------------
@@ -159,23 +169,22 @@ class MainActivity : AppCompatActivity() {
      * @param lastSync
      * */
     private fun fetchWebService(countryZone: String, lastSync: String) {
-        api.getProducts(countryZone, lastSync).enqueue(object : Callback<com.leothos.hager.model.Response> {
-            override fun onFailure(call: Call<com.leothos.hager.model.Response>, t: Throwable) {
+        api.getProducts(countryZone, lastSync).enqueue(object : Callback<ApiProductsResponse> {
+            override fun onFailure(call: Call<ApiProductsResponse>, t: Throwable) {
                 Log.i(TAG, "Error ${t.message}")
                 toast(getString(R.string.connectivity_problem))
             }
 
             override fun onResponse(
-                call: Call<com.leothos.hager.model.Response>,
-                response: Response<com.leothos.hager.model.Response>
+                call: Call<ApiProductsResponse>,
+                apiProductsResponse: Response<ApiProductsResponse>
             ) {
                 when {
-                    response.isSuccessful -> {
-                        Log.d(TAG, "fetched response = ${response.body()}")
-                        list = response.body()?.data as List<DataItem>
-                        if (list.isEmpty()) toast(getString(R.string.no_data_found))
-                        else model.data = list as ArrayList<DataItem>
-                        startActivity()
+                    apiProductsResponse.isSuccessful -> {
+                        Log.d(TAG, "fetched response = ${apiProductsResponse.body()}")
+                        DataManager.dataItems = apiProductsResponse.body()?.data as ArrayList<ApiProductItem>
+                        if (DataManager.dataItems.isEmpty()) toast(getString(R.string.no_data_found))
+                        else startActivity()
                     }
                 }
                 progressBar.visibility = View.GONE
