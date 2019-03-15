@@ -7,8 +7,7 @@ import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
 /**
- * Necessary to provide all necessary class without taking car of the constructor
- * The Factory class will take care of it for us
+ * This the bridge between the viewModel and the Data
  * */
 object Injection {
 
