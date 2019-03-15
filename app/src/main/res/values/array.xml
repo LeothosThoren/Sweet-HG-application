@@ -2,13 +2,13 @@
 <resources>
 
     <string-array name="country_id">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
+        <item>France</item>
+        <item>Germany</item>
+        <item>England</item>
+        <item>Luxembourg</item>
+        <item>Portugal</item>
+        <item>Spain</item>
+        <item>Czech Republic</item>
+        <item>Italy</item>
     </string-array>
 </resources>

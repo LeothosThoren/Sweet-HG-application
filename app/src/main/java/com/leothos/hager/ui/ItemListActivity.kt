@@ -2,12 +2,14 @@ package com.leothos.hager.ui
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.leothos.hager.FAVORITE_AVAILABLE
 import com.leothos.hager.R
 import com.leothos.hager.adapters.FavoriteItemRecyclerViewAdapter
 import com.leothos.hager.adapters.ItemRecyclerViewAdapter
@@ -15,6 +17,7 @@ import com.leothos.hager.data.DataManager
 import com.leothos.hager.injections.Injection
 import com.leothos.hager.model.api.ApiProductItem
 import com.leothos.hager.model.entities.FavoriteProduct
+import com.leothos.hager.toast
 import com.leothos.hager.view_models.FavoriteProductViewModel
 import kotlinx.android.synthetic.main.activity_item_list.*
 import kotlinx.android.synthetic.main.item_list.*
@@ -32,6 +35,7 @@ class ItemListActivity : AppCompatActivity(),
     private var dataItem = DataManager.dataItems
     private var favoriteProductViewModel: FavoriteProductViewModel? = null
     private var isFavoriteListEnabled = false
+    private var areFavoritesAvailable = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +48,12 @@ class ItemListActivity : AppCompatActivity(),
             twoPane = true
         }
 
+
+        /**
+         * This part either the user click on favorite icon rom Main activty
+         * */
+        areFavoritesAvailable = intent.getBooleanExtra(FAVORITE_AVAILABLE, false)
+
         init()
     }
 
@@ -51,6 +61,9 @@ class ItemListActivity : AppCompatActivity(),
     override fun onResume() {
         super.onResume()
         item_list.adapter?.notifyDataSetChanged()
+
+        //OnResume allow the app to configure and display the list of data available
+        displayFavoriteItemFromMainActivity(areFavoritesAvailable)
     }
 
     private fun init() {
@@ -71,10 +84,10 @@ class ItemListActivity : AppCompatActivity(),
                 true
             }
         }
-
         //Setup
         setupRecyclerViewForProductList(item_list)
         configureViewModel()
+
     }
 
     // ----------
@@ -120,6 +133,8 @@ class ItemListActivity : AppCompatActivity(),
      * allow to update the recyclerView instantaneously with data provided by Room
      * */
     private fun updateFavoriteProductList(favoriteList: List<FavoriteProduct>) {
+
+        if (favoriteList.isEmpty()) toast("No favorites recorded yet!")
         item_list.adapter =
             FavoriteItemRecyclerViewAdapter(
                 this, favoriteList, twoPane, Glide.with(this), this
@@ -138,6 +153,13 @@ class ItemListActivity : AppCompatActivity(),
         }
     }
 
+    private fun displayFavoriteItemFromMainActivity(bool: Boolean) {
+        if (bool) {
+            listFab.visibility = View.GONE
+            toolbar.title = getString(R.string.toolbar_title_favorites)
+            getFavoriteProductFromDB()
+        }
+    }
 
     // Interface
     override fun onItemSelected(productItem: ApiProductItem) {

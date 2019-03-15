@@ -1,11 +1,11 @@
 package com.leothos.hager.ui
 
+import android.Manifest
 import android.annotation.TargetApi
 import android.app.DatePickerDialog
 import android.content.Intent
-import android.graphics.Color
+import android.content.pm.PackageManager
 import android.graphics.PorterDuff
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -15,6 +15,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -53,7 +54,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(main_toolbar)
-        main_toolbar.title = getString(R.string.app_name)
 
         //Methods
         configureSpinner()
@@ -77,6 +77,26 @@ class MainActivity : AppCompatActivity() {
 
             //To show data after the selection
             updateTextView()
+        }
+    }
+
+    /**
+     * This method allow to perform a call after checking the permissions on the device
+     * */
+    private fun makeAPhoneCall() {
+        if (ContextCompat.checkSelfPermission(
+                this@MainActivity,
+                Manifest.permission.CALL_PHONE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this@MainActivity,
+                arrayOf(Manifest.permission.CALL_PHONE), REQUEST_CALL
+            )
+        } else {
+            val intent = Intent(Intent.ACTION_CALL)
+            intent.data = Uri.parse("tel: $HOT_LINE_NUMBER")
+            startActivity(intent)
         }
     }
 
@@ -105,16 +125,16 @@ class MainActivity : AppCompatActivity() {
 
     //Set up TextView
     private fun updateTextView() {
-        countryValue = spinner.selectedItem.toString()
-        textInfo.text = getString(
-            R.string.info_message, countryValue, dateFormatterFR(lastSyncValue)
+        countryValue = DataManager.countryMap.getValue(spinner.selectedItem.toString())
+        textDateInfo.text = getString(
+            R.string.info_message, dateFormatterFR(lastSyncValue)
         )
     }
 
     //Set up Progressbar
     private fun handleProgressBar() {
         progressBar.visibility = View.VISIBLE
-        textInfo.visibility = View.VISIBLE
+        textDateInfo.visibility = View.VISIBLE
         progressBar.indeterminateDrawable
             .setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_IN)
     }
@@ -127,23 +147,33 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id = item?.itemId
-        return if (id == R.id.action_call_hotline) {
-            toast("test call")
-            makeACall()
-            true
+        when (id) {
+            R.id.action_call_hotline -> {
+                makeAPhoneCall()
+                return true
+            }
+            R.id.action_show_favorite -> {
+                val i = Intent(this, ItemListActivity::class.java)
+                i.putExtra(FAVORITE_AVAILABLE, true)
+                startActivity(i)
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
         }
-        //Do something
-        else super.onOptionsItemSelected(item)
     }
 
     // --------------
     // Config
     // --------------
 
-    private fun makeACall() {
-        val intent = Intent(Intent.ACTION_CALL)
-        intent.data = Uri.parse("tel: $HOTLINE_NUMBER")
-        startActivity(intent)
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode == REQUEST_CALL) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                makeAPhoneCall()
+            } else {
+                toast(getString(R.string.permission_denied))
+            }
+        }
     }
 
     /**
@@ -175,8 +205,6 @@ class MainActivity : AppCompatActivity() {
             android.R.style.Theme_DeviceDefault_Dialog_MinWidth,
             selectionDateListener, year, month, day
         )
-
-        dateDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dateDialog.show()
     }
 

@@ -3,6 +3,7 @@ package com.leothos.hager
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 /**
  * dateFormatterEn display the pattern yyyy-MM-dd'T'HH:mm:ss and return a string value
  * @param cal: Calendar
@@ -21,3 +22,4 @@ fun dateFormatterFR(str: String): String {
     val toFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
     return sdf.format(toFormat.parse(str))
 }
+

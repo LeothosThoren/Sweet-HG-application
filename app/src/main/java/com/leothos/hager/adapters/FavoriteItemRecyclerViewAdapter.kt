@@ -52,6 +52,7 @@ class FavoriteItemRecyclerViewAdapter(
         val picture: ImageView = view.picture
         var favoriteItemPosition = 0
 
+
         init {
             view.setOnClickListener {
                 // Default configuration to handle large tablet device or smart phone device
