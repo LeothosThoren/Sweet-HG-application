@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.leothos.hager.PICTURE_URL
 import com.leothos.hager.R
 import com.leothos.hager.data.DataManager
@@ -25,7 +24,6 @@ class ItemDetailFragment : Fragment() {
     private var productItem: ApiProductItem? = null
     private val TAG = this::class.java.simpleName
     private var favoriteProductViewModel: FavoriteProductViewModel? = null
-
 
     companion object {
         /**
@@ -61,7 +59,6 @@ class ItemDetailFragment : Fragment() {
         super.onResume()
         updateUI()
         init()
-
     }
 
     // --------
@@ -69,7 +66,7 @@ class ItemDetailFragment : Fragment() {
     // --------
     private fun init() {
         configureViewModel()
-        detailFab.setOnClickListener {
+        listFab.setOnClickListener {
             addToFavorite()
         }
     }
@@ -90,7 +87,6 @@ class ItemDetailFragment : Fragment() {
         detailLongDescription.text = productItem?.descriptions?.get(0)?.value
         Glide.with(this)
             .load("$PICTURE_URL${productItem?.reference}.webp")
-            .apply(RequestOptions.centerInsideTransform())
             .into(detailImage)
     }
 
@@ -118,20 +114,20 @@ class ItemDetailFragment : Fragment() {
     private fun addToFavorite() {
         val favoriteProduct = FavoriteProduct(
             productItem?.reference!!,
-            productItem?.brand!!,
-            productItem?.descriptions?.get(0)?.value!!,
-            productItem?.price!!,
-            productItem?.priceCurrency!!,
-            productItem?.eAN!!
+            productItem?.brand,
+            productItem?.descriptions?.get(0)?.value,
+            productItem?.price,
+            productItem?.priceCurrency,
+            productItem?.eAN
         )
 
-//        favoriteProductViewModel.insertFavoriteProduct(favoriteProduct)
+        favoriteProductViewModel?.insertFavoriteProduct(favoriteProduct)
         context?.toast("Added to favorite")
-        detailFab.setImageResource(R.drawable.ic_cancel_favorite)
+        listFab.setImageResource(R.drawable.ic_cancel_favorite)
     }
 
     /**
-     * It delete the current favorite product from the database
+     * THis method delete the current favorite product from the database
      * */
     private fun deleteFromfavorite() {
         favoriteProductViewModel?.deleteFavoriteProduct(productItem?.reference!!)

@@ -1,82 +1,145 @@
 package com.leothos.hager.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.android.material.snackbar.Snackbar
 import com.leothos.hager.R
+import com.leothos.hager.adapters.FavoriteItemRecyclerViewAdapter
 import com.leothos.hager.adapters.ItemRecyclerViewAdapter
 import com.leothos.hager.data.DataManager
+import com.leothos.hager.injections.Injection
 import com.leothos.hager.model.api.ApiProductItem
-import com.leothos.hager.toast
-import com.leothos.hager.view_models.ProductsViewModel
+import com.leothos.hager.model.entities.FavoriteProduct
+import com.leothos.hager.view_models.FavoriteProductViewModel
 import kotlinx.android.synthetic.main.activity_item_list.*
 import kotlinx.android.synthetic.main.item_list.*
 
-/**
- * An activity representing a list of Pings. This activity
- * has different presentations for handset and tablet-size devices. On
- * handsets, the activity presents a list of items, which when touched,
- * lead to a [ItemDetailActivity] representing
- * item details. On tablets, the activity presents the list of items and
- * item details side-by-side using two vertical panes.
- */
 class ItemListActivity : AppCompatActivity(),
-ItemRecyclerViewAdapter.OnItemSelectedListener{
+    ItemRecyclerViewAdapter.OnItemSelectedListener,
+    FavoriteItemRecyclerViewAdapter.OnFavoriteItemSelectedListener {
 
-        /**
+    /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     private val TAG = this::class.java.simpleName
     private var twoPane: Boolean = false
     private var dataItem = DataManager.dataItems
-    private lateinit var model: ProductsViewModel
+    private var favoriteProductViewModel: FavoriteProductViewModel? = null
+    private var isFavoriteListEnabled = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_item_list)
-        configureViewModel()
-        setSupportActionBar(toolbar)
-        toolbar.title = getString(R.string.toolbar_title_list_of_products)
+        //First update of the toolbar title
+        updateTitle(getString(R.string.toolbar_title_list_of_products))
 
-        detailFab.setOnClickListener { view ->
-            Snackbar.make(view, getString(R.string.access_to_favorites), Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+        /**
+         * Depends on the user action the views are adapted whether the list of product is displayed
+         * or the favorites. The toolbar title, the fab icon and off course the data
+         * */
+        listFab.setOnClickListener { view ->
+            isFavoriteListEnabled = if (isFavoriteListEnabled) {
+                toolbar.title = getString(R.string.toolbar_title_list_of_products)
+                listFab.setImageResource(R.drawable.ic_star_24dp)
+                setupRecyclerViewForProductList(item_list)
+                false
+            } else {
+                toolbar.title = getString(R.string.toolbar_title_favorites)
+                listFab.setImageResource(R.drawable.ic_filter_list_white_24dp)
+                getFavoriteProductFromDB()
+                true
+            }
         }
 
         if (item_detail_container != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
             twoPane = true
         }
 
-        setupRecyclerView(item_list)
+        setupRecyclerViewForProductList(item_list)
+        configureViewModel()
     }
 
-    private fun setupRecyclerView(recyclerView: RecyclerView) {
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter =
-            ItemRecyclerViewAdapter(this, dataItem, twoPane, Glide.with(this),this)
-    }
-
-    private fun configureViewModel() {
-        model = ViewModelProviders.of(this).get(ProductsViewModel::class.java)
-
-    }
 
     override fun onResume() {
         super.onResume()
         item_list.adapter?.notifyDataSetChanged()
     }
 
+    // ----------
+    // Config
+    // ----------
+
+    /**
+     * This method handle the configuration of all the product fetch from the web service
+     * @param recyclerView is useful here to handle the two pane feature for tablet device
+     * */
+    private fun setupRecyclerViewForProductList(recyclerView: RecyclerView) {
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter =
+            ItemRecyclerViewAdapter(this, dataItem, twoPane, Glide.with(this), this)
+    }
+
+
+    /**
+     * This method allow the access to database and configure ViewModel instance
+     * */
+    private fun configureViewModel() {
+        val modelFactory = Injection.viewModelFactory(this)
+        favoriteProductViewModel = ViewModelProviders.of(this, modelFactory)
+            .get(FavoriteProductViewModel::class.java)
+    }
+
+
+    // --------
+    // UI
+    // --------
+
+
+    /**
+     * Thanks to ViewModel and Room it's easy to retrieve data that user selected as favorite
+     * */
+    private fun getFavoriteProductFromDB() {
+        favoriteProductViewModel?.getAllFavoriteProducts()?.observe(this,
+            Observer { updateFavoriteProductList(it) })
+    }
+
+    /**
+     * This method combine with the live data provided through the ViewModel
+     * allow to update the recyclerView instantaneously with data provided by Room
+     * */
+    private fun updateFavoriteProductList(favoriteList: List<FavoriteProduct>) {
+        item_list.adapter =
+            FavoriteItemRecyclerViewAdapter(
+                this, favoriteList, twoPane, Glide.with(this), this
+            )
+        item_list.adapter?.notifyDataSetChanged()
+    }
+
+    /**
+     * The objective is to adapt the views every time the user perform an action
+     * A list of product is set, but he can check his favorites too, so it's
+     * necessary to update the views in order to prevent bad user experience
+     * */
+    private fun updateTitle(text: String) {
+        setSupportActionBar(toolbar).apply {
+            title = text
+        }
+    }
+
+
+    // Interface
     override fun onItemSelected(productItem: ApiProductItem) {
-        toast("The product with the reference ${productItem.reference} is selected")
+        Log.d(TAG, "The product with the reference ${productItem.reference} is selected")
+    }
+
+    override fun onFavoriteItemSelected(favoriteProduct: FavoriteProduct) {
+        Log.d(TAG, "The favorite product with the reference ${favoriteProduct.referenceId} is selected")
     }
 }

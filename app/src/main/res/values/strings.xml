@@ -13,4 +13,7 @@
     <string name="reference">reference</string>
     <string name="description">description</string>
     <string name="ean">Ean</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="toolbar_title_favorites">Your favorites</string>
 </resources>

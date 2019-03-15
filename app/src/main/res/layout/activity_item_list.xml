@@ -32,12 +32,13 @@
     </FrameLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/detailFab"
+            android:id="@+id/listFab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@android:drawable/btn_star" app:backgroundTint="@color/colorPrimary"
+            app:srcCompat="@drawable/ic_star_24dp"
+            app:backgroundTint="@color/colorPrimary"
             android:tint="@color/color_yellow"/>
 
 
