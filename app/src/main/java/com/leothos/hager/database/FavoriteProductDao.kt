@@ -8,7 +8,7 @@ import com.leothos.hager.model.entities.FavoriteProduct
 @Dao
 interface FavoriteProductDao {
 
-    @Query("SELECT * FROM FavoriteProduct ORDER BY referenceId DESC")
+    @Query("SELECT * FROM FavoriteProduct")
     fun getAllFavoriteProducts(): LiveData<List<FavoriteProduct>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

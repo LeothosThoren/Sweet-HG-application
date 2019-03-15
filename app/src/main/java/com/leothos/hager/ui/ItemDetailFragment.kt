@@ -28,7 +28,6 @@ class ItemDetailFragment : Fragment() {
     private var favoriteProductViewModel: FavoriteProductViewModel? = null
     private var isFavoriteExist = false
     private var position = POSITION_NOT_SET
-    private var favoriteProductList: List<FavoriteProduct>? = null
 
     companion object {
         /**

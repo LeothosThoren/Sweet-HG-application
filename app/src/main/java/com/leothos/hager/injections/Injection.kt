@@ -6,6 +6,10 @@ import com.leothos.hager.repository.FavoriteProductDataRepository
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
+/**
+ * Necessary to provide all necessary class without taking car of the constructor
+ * The Factory class will take care of it for us
+ * */
 object Injection {
 
     private fun provideProductDataSource(context: Context): FavoriteProductDataRepository {

@@ -6,6 +6,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
+    /**
+     * Classic Retrofit configurations
+     * */
     private val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
