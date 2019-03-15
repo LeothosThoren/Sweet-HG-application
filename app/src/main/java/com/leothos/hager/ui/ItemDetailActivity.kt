@@ -21,9 +21,9 @@ class ItemDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_item_detail)
-        setSupportActionBar(detail_toolbar)
-        detail_toolbar.title = getString(R.string.toolbar_detail_activity_title)
-
+        setSupportActionBar(detail_toolbar).apply {
+            title = getString(R.string.toolbar_detail_activity_title)
+        }
         // Show the Up button in the action bar.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 

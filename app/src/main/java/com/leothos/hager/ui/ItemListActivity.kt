@@ -40,6 +40,20 @@ class ItemListActivity : AppCompatActivity(),
         //First update of the toolbar title
         updateTitle(getString(R.string.toolbar_title_list_of_products))
 
+        if (item_detail_container != null) {
+            twoPane = true
+        }
+
+        init()
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        item_list.adapter?.notifyDataSetChanged()
+    }
+
+    private fun init() {
         /**
          * Depends on the user action the views are adapted whether the list of product is displayed
          * or the favorites. The toolbar title, the fab icon and off course the data
@@ -58,18 +72,9 @@ class ItemListActivity : AppCompatActivity(),
             }
         }
 
-        if (item_detail_container != null) {
-            twoPane = true
-        }
-
+        //Setup
         setupRecyclerViewForProductList(item_list)
         configureViewModel()
-    }
-
-
-    override fun onResume() {
-        super.onResume()
-        item_list.adapter?.notifyDataSetChanged()
     }
 
     // ----------
