@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.jwhh.notekeeper.ui.NoteActivity">
+    <item
+        android:id="@+id/action_call_hotline"
+        android:icon="@drawable/ic_local_phone_white_24dp"
+        android:orderInCategory="100"
+        android:title="@string/next"
+        app:showAsAction="ifRoom|withText" />
+</menu>

@@ -1,12 +1,17 @@
 package com.leothos.hager.ui
 
+import android.annotation.TargetApi
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +31,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
 
+
 class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
@@ -42,9 +48,12 @@ class MainActivity : AppCompatActivity() {
         RetrofitClient.apiService
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        setSupportActionBar(main_toolbar)
+        main_toolbar.title = getString(R.string.app_name)
 
         //Methods
         configureSpinner()
@@ -60,7 +69,6 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * openCalendarWidget method allows the user to select a date in the DatePickerDialog widget
-     *
      * */
     private fun openCalendarWidget() {
         selectionDateListener = DatePickerDialog.OnDateSetListener { v, year, month, dayOfMonth ->
@@ -95,6 +103,7 @@ class MainActivity : AppCompatActivity() {
     // UI
     // --------------
 
+    //Set up TextView
     private fun updateTextView() {
         countryValue = spinner.selectedItem.toString()
         textInfo.text = getString(
@@ -102,16 +111,40 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-
+    //Set up Progressbar
     private fun handleProgressBar() {
         progressBar.visibility = View.VISIBLE
+        textInfo.visibility = View.VISIBLE
         progressBar.indeterminateDrawable
             .setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_IN)
+    }
+
+    //Set up ToolBar
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_call_option, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        val id = item?.itemId
+        return if (id == R.id.action_call_hotline) {
+            toast("test call")
+            makeACall()
+            true
+        }
+        //Do something
+        else super.onOptionsItemSelected(item)
     }
 
     // --------------
     // Config
     // --------------
+
+    private fun makeACall() {
+        val intent = Intent(Intent.ACTION_CALL)
+        intent.data = Uri.parse("tel: $HOTLINE_NUMBER")
+        startActivity(intent)
+    }
 
     /**
      * A simple configuration of a spinner object in order to help the user to select an item
@@ -180,10 +213,12 @@ class MainActivity : AppCompatActivity() {
             ) {
                 when {
                     apiProductsResponse.isSuccessful -> {
-                        Log.d(TAG, "fetched response = ${apiProductsResponse.body()?.data?.get(0)}")
                         DataManager.dataItems = apiProductsResponse.body()?.data as ArrayList<ApiProductItem>
                         if (DataManager.dataItems.isEmpty()) toast(getString(R.string.no_data_found))
-                        else startActivity()
+                        else {
+                            Log.d(TAG, "fetched response = ${apiProductsResponse.body()?.data?.get(0)}")
+                            startActivity()
+                        }
                     }
                 }
                 progressBar.visibility = View.GONE

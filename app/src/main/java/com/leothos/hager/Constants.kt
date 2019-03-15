@@ -6,3 +6,4 @@ const val BASE_URL = "https://mobilemid.hager.com/ecat/api/sync/"
 const val PICTURE_URL = "https://mobilemid.hager.com/ecat/imgs/"
 const val ITEM_POSITION = "ITEM_POSITION"
 const val POSITION_NOT_SET = -1
+const val HOTLINE_NUMBER = "0899235478"
