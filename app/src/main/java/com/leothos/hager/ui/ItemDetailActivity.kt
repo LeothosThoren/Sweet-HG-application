@@ -2,12 +2,14 @@ package com.leothos.hager.ui
 
 import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
+import android.util.Log
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import com.leothos.hager.FAVORITE_ITEM_POSITION
 import com.leothos.hager.ITEM_POSITION
 import com.leothos.hager.POSITION_NOT_SET
 import com.leothos.hager.R
+import com.leothos.hager.ui.ItemDetailFragment.Companion.ARG_ITEM_POS
 import kotlinx.android.synthetic.main.activity_item_detail.*
 
 /**
@@ -28,16 +30,38 @@ class ItemDetailActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
-            val fragment = ItemDetailFragment().apply {
+            val fragmentP = ItemDetailFragment().apply {
                 arguments = Bundle().apply {
-                    putInt(ItemDetailFragment.ARG_ITEM_POS,
-                        intent.getIntExtra(ITEM_POSITION, POSITION_NOT_SET))
+                    putInt(
+                        ItemDetailFragment.ARG_ITEM_POS,
+                        intent.getIntExtra(ITEM_POSITION, POSITION_NOT_SET)
+                    )
                 }
             }
 
-            supportFragmentManager.beginTransaction()
-                .add(R.id.item_detail_container, fragment)
-                .commit()
+            val fragmentF = ItemDetailFragment().apply {
+                arguments = Bundle().apply {
+                    putInt(
+                        ItemDetailFragment.ARG_ITEM_FAVORITE_POS,
+                        intent.getIntExtra(FAVORITE_ITEM_POSITION, POSITION_NOT_SET)
+                    )
+                }
+            }
+
+            Log.d("CHECK", "fragment1 = ${fragmentP.arguments}")
+            Log.d("CHECK", "fragment2 = ${fragmentF.arguments}")
+
+
+            if (fragmentP.arguments?.get(ARG_ITEM_POS) != POSITION_NOT_SET) {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.item_detail_container, fragmentP)
+                    .commit()
+            } else {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.item_detail_container, fragmentF)
+                    .commit()
+            }
+
         }
     }
 

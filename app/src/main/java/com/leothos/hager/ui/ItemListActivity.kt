@@ -50,7 +50,7 @@ class ItemListActivity : AppCompatActivity(),
 
 
         /**
-         * This part either the user click on favorite icon rom Main activty
+         * Retrieve the user choice from main activity, only a boolean
          * */
         areFavoritesAvailable = intent.getBooleanExtra(FAVORITE_AVAILABLE, false)
 

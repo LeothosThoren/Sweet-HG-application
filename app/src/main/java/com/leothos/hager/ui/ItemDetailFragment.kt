@@ -23,11 +23,15 @@ import kotlinx.android.synthetic.main.item_detail.*
 
 class ItemDetailFragment : Fragment() {
 
-    private var productItem: ApiProductItem? = null
     private val TAG = this::class.java.simpleName
+    //data
+    private var productItem: ApiProductItem? = null
+    private var favoriteProductItemList: List<FavoriteProduct>? = null
+    //var
     private var favoriteProductViewModel: FavoriteProductViewModel? = null
     private var isFavoriteExist = false
     private var position = POSITION_NOT_SET
+    private var isDatabaseItem = false
 
     companion object {
         /**
@@ -35,20 +39,15 @@ class ItemDetailFragment : Fragment() {
          * represents.
          */
         const val ARG_ITEM_POS = "item_position"
+        const val ARG_ITEM_FAVORITE_POS = "favorite_item_position"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //Retrieve data position from activity
-        arguments?.let {
-            if (it.containsKey(ARG_ITEM_POS)) {
-                position = it.getInt(ARG_ITEM_POS)
-                productItem = DataManager.dataItems[position]
-            }
-        }
-        Log.d(TAG, "productItem = ${productItem?.reference}")
-
+        // Methods
+        configureViewModel()
+        getFavoriteProductFromDB()
 
     }
 
@@ -57,15 +56,24 @@ class ItemDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.item_detail, container, false)
-        // Methods
-        configureViewModel()
-        getFavoriteProductFromDB()
+        //Retrieve data position from activity
+        arguments?.let {
+            if (it.containsKey(ARG_ITEM_POS)) {
+                Log.d("CHECK", "contains ARG_ITEM_POS = $ARG_ITEM_POS")
+                position = it.getInt(ARG_ITEM_POS)
+                productItem = DataManager.dataItems[position]
+            } else if (it.containsKey(ARG_ITEM_FAVORITE_POS)) {
+                Log.d("CHECK", "contains ARG_ITEM_FAVORITE_POS = $ARG_ITEM_FAVORITE_POS")
+                position = it.getInt(ARG_ITEM_FAVORITE_POS)
+                isDatabaseItem = true
+            }
+        }
+        Log.d(TAG, "productItem = ${productItem?.reference}")
         return rootView
     }
 
     override fun onResume() {
         super.onResume()
-        updateUI()
         init()
     }
 
@@ -97,15 +105,32 @@ class ItemDetailFragment : Fragment() {
      * This method bind the data to the detail view in order to display information from the data
      * */
     private fun updateUI() {
-        detailBrand.text = productItem?.brand
-        detailPrice.text =
-            getString(R.string.detail_price, productItem?.price.toString(), "${productItem?.priceCurrency}")
-        detailReference.text = productItem?.reference
-        detailEAN.text = productItem?.eAN
-        detailLongDescription.text = productItem?.descriptions?.get(0)?.value
-        Glide.with(this)
-            .load("$PICTURE_URL${productItem?.reference}.webp")
-            .into(detailImage)
+        if (isDatabaseItem) {
+            detailBrand.text = favoriteProductItemList?.get(position)?.brand
+            detailPrice.text =
+                getString(
+                    R.string.detail_price, favoriteProductItemList?.get(position)?.price.toString(),
+                    favoriteProductItemList?.get(position)?.currency
+                )
+            detailReference.text = favoriteProductItemList?.get(position)?.referenceId
+            detailEAN.text = favoriteProductItemList?.get(position)?.eAN
+            detailLongDescription.text = favoriteProductItemList?.get(position)?.description
+            Glide.with(this)
+                .load("$PICTURE_URL${favoriteProductItemList?.get(position)?.referenceId}.webp")
+                .into(detailImage)
+
+        } else {
+            detailBrand.text = productItem?.brand
+            detailPrice.text =
+                getString(R.string.detail_price, productItem?.price.toString(), "${productItem?.priceCurrency}")
+            detailReference.text = productItem?.reference
+            detailEAN.text = productItem?.eAN
+            detailLongDescription.text = productItem?.descriptions?.get(0)?.value
+            Glide.with(this)
+                .load("$PICTURE_URL${productItem?.reference}.webp")
+                .into(detailImage)
+        }
+
     }
 
     // ----------
@@ -133,8 +158,10 @@ class ItemDetailFragment : Fragment() {
      * This method combine with the live data provided through the ViewModel
      * allow to update the recyclerView instantaneously with data provided by Room
      * */
-    private fun updateFavoriteProductList(favoriteList: List<FavoriteProduct>) {
-        compareProductReference(favoriteList)
+    private fun updateFavoriteProductList(favoriteList: List<FavoriteProduct>?) {
+        favoriteProductItemList = favoriteList
+        compareProductReference(favoriteProductItemList)
+        updateUI()
     }
 
     // ----------
@@ -174,13 +201,24 @@ class ItemDetailFragment : Fragment() {
      * Or to delete the object from the favorite list
      * */
     private fun compareProductReference(favoriteProduct: List<FavoriteProduct?>?) {
-        for (i in 0 until (favoriteProduct?.size ?: 0)) {
-            if (favoriteProduct?.get(i)?.referenceId == productItem?.reference) {
-                Log.d(TAG, "Compare reference = true")
-                isFavoriteExist = true
-                break
+        if (isDatabaseItem) {
+            for (i in 0 until (favoriteProduct?.size ?: 0)) {
+                if (favoriteProduct?.get(i)?.referenceId == favoriteProductItemList?.get(position)?.referenceId) {
+                    Log.d(TAG, "Compare reference from database = true")
+                    isFavoriteExist = true
+                    break
+                }
+            }
+        } else {
+            for (i in 0 until (favoriteProduct?.size ?: 0)) {
+                if (favoriteProduct?.get(i)?.referenceId == productItem?.reference) {
+                    Log.d(TAG, "Compare reference = true")
+                    isFavoriteExist = true
+                    break
+                }
             }
         }
+
         if (isFavoriteExist) listFab.setImageResource(R.drawable.ic_delete_white_24dp)
     }
 }

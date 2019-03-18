@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
-import com.leothos.hager.ITEM_POSITION
+import com.leothos.hager.FAVORITE_ITEM_POSITION
 import com.leothos.hager.PICTURE_URL
 import com.leothos.hager.R
 import com.leothos.hager.model.entities.FavoriteProduct
@@ -58,7 +58,7 @@ class FavoriteItemRecyclerViewAdapter(
                 if (twoPane) {
                     val fragment = ItemDetailFragment().apply {
                         arguments = Bundle().apply {
-                            putInt(ItemDetailFragment.ARG_ITEM_POS, favoriteItemPosition)
+                            putInt(ItemDetailFragment.ARG_ITEM_FAVORITE_POS, favoriteItemPosition)
                         }
                     }
                     parentActivity.supportFragmentManager
@@ -68,7 +68,7 @@ class FavoriteItemRecyclerViewAdapter(
                 } else {
                     onFavoriteItemSelectedListener?.onFavoriteItemSelected(favoriteProduct[favoriteItemPosition])
                     val intent = Intent(parentActivity, ItemDetailActivity::class.java).apply {
-                        putExtra(ITEM_POSITION, favoriteItemPosition)
+                        putExtra(FAVORITE_ITEM_POSITION, favoriteItemPosition)
                     }
                     parentActivity.startActivity(intent)
                 }
