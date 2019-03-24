@@ -2,13 +2,11 @@ package com.leothos.hager.ui
 
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.leothos.hager.FAVORITE_AVAILABLE
 import com.leothos.hager.R
 import com.leothos.hager.adapters.FavoriteItemRecyclerViewAdapter
@@ -22,6 +20,7 @@ import com.leothos.hager.toast
 import com.leothos.hager.view_models.FavoriteProductViewModel
 import kotlinx.android.synthetic.main.activity_item_list.*
 import kotlinx.android.synthetic.main.item_list.*
+import kotlinx.android.synthetic.main.toolbar.*
 
 class ItemListActivity : AppCompatActivity(),
     ItemRecyclerViewAdapter.OnItemSelectedListener,
@@ -104,7 +103,7 @@ class ItemListActivity : AppCompatActivity(),
     private fun setupRecyclerViewForProductList(recyclerView: RecyclerView) {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter =
-            ItemRecyclerViewAdapter(this, dataItem, twoPane, Glide.with(this), this)
+            ItemRecyclerViewAdapter(this, dataItem, twoPane, this)
     }
 
 
@@ -140,7 +139,7 @@ class ItemListActivity : AppCompatActivity(),
         if (favoriteList.isEmpty()) toast("No favorites recorded yet!")
         item_list.adapter =
             FavoriteItemRecyclerViewAdapter(
-                this, favoriteList, twoPane, Glide.with(this), this
+                this, favoriteList, twoPane, this
             )
         item_list.adapter?.notifyDataSetChanged()
     }

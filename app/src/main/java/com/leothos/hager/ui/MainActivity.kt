@@ -17,7 +17,6 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import com.leothos.hager.*
 import com.leothos.hager.data.DataManager
 import com.leothos.hager.model.api.ApiProductItem
@@ -25,6 +24,7 @@ import com.leothos.hager.model.api.ApiProductsResponse
 import com.leothos.hager.web_services.Api
 import com.leothos.hager.web_services.RetrofitClient
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.toolbar.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(main_toolbar)
+        setSupportActionBar(toolbar)
 
         //Methods
         configureSpinner()

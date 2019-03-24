@@ -8,8 +8,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.RequestManager
-import com.bumptech.glide.request.RequestOptions
 import com.leothos.hager.FAVORITE_ITEM_POSITION
 import com.leothos.hager.PICTURE_URL
 import com.leothos.hager.R
@@ -24,7 +22,6 @@ class FavoriteItemRecyclerViewAdapter(
     private val parentActivity: ItemListActivity,
     private val favoriteProduct: List<FavoriteProduct>,
     private val twoPane: Boolean,
-    private val glide: RequestManager,
     private var onFavoriteItemSelectedListener: OnFavoriteItemSelectedListener? = null
 ) :
     RecyclerView.Adapter<FavoriteItemRecyclerViewAdapter.ViewHolder>() {
