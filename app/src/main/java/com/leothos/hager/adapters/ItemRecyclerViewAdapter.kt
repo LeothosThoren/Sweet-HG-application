@@ -13,6 +13,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.leothos.hager.ITEM_POSITION
 import com.leothos.hager.PICTURE_URL
 import com.leothos.hager.R
+import com.leothos.hager.loadUrl
 import com.leothos.hager.model.api.ApiProductItem
 import com.leothos.hager.ui.ItemDetailActivity
 import com.leothos.hager.ui.ItemDetailFragment
@@ -38,8 +39,7 @@ class ItemRecyclerViewAdapter(
         val item = productValues[position]
         holder.reference.text = item.reference
         holder.shortDescription.text = item.shortDescriptions?.get(0)?.value
-        glide.load("$PICTURE_URL${item.reference}.webp")
-            .apply(RequestOptions().centerCrop()).into(holder.picture)
+        holder.picture.loadUrl("$PICTURE_URL${item.reference}.webp")
         holder.itemPosition = position
 
     }

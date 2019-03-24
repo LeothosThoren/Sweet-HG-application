@@ -15,6 +15,7 @@ import com.leothos.hager.POSITION_NOT_SET
 import com.leothos.hager.R
 import com.leothos.hager.data.DataManager
 import com.leothos.hager.injections.Injection
+import com.leothos.hager.loadUrl
 import com.leothos.hager.model.api.ApiProductItem
 import com.leothos.hager.model.entities.FavoriteProduct
 import com.leothos.hager.view_models.FavoriteProductViewModel
@@ -115,9 +116,7 @@ class ItemDetailFragment : Fragment() {
             detailReference.text = favoriteProductItemList?.get(position)?.referenceId
             detailEAN.text = favoriteProductItemList?.get(position)?.eAN
             detailLongDescription.text = favoriteProductItemList?.get(position)?.description
-            Glide.with(this)
-                .load("$PICTURE_URL${favoriteProductItemList?.get(position)?.referenceId}.webp")
-                .into(detailImage)
+            detailImage.loadUrl("$PICTURE_URL${favoriteProductItemList?.get(position)?.referenceId}.webp")
 
         } else {
             detailBrand.text = productItem?.brand
@@ -126,9 +125,7 @@ class ItemDetailFragment : Fragment() {
             detailReference.text = productItem?.reference
             detailEAN.text = productItem?.eAN
             detailLongDescription.text = productItem?.descriptions?.get(0)?.value
-            Glide.with(this)
-                .load("$PICTURE_URL${productItem?.reference}.webp")
-                .into(detailImage)
+            detailImage.loadUrl("$PICTURE_URL${productItem?.reference}.webp")
         }
 
     }

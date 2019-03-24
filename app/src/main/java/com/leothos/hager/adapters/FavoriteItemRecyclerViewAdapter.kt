@@ -13,6 +13,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.leothos.hager.FAVORITE_ITEM_POSITION
 import com.leothos.hager.PICTURE_URL
 import com.leothos.hager.R
+import com.leothos.hager.loadUrl
 import com.leothos.hager.model.entities.FavoriteProduct
 import com.leothos.hager.ui.ItemDetailActivity
 import com.leothos.hager.ui.ItemDetailFragment
@@ -38,8 +39,7 @@ class FavoriteItemRecyclerViewAdapter(
         val item = favoriteProduct[position]
         holder.reference.text = item.referenceId
         holder.shortDescription.text = item.description
-        glide.load("$PICTURE_URL${item.referenceId}.webp")
-            .apply(RequestOptions().centerCrop()).into(holder.picture)
+        holder.picture.loadUrl("$PICTURE_URL${item.referenceId}.webp")
         holder.favoriteItemPosition = position
 
     }

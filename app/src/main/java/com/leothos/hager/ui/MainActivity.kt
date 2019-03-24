@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import com.leothos.hager.*
 import com.leothos.hager.data.DataManager
 import com.leothos.hager.model.api.ApiProductItem
@@ -128,8 +129,8 @@ class MainActivity : AppCompatActivity() {
 
     //Set up Progressbar
     private fun handleProgressBar() {
-        progressBar.visibility = View.VISIBLE
-        textDateInfo.visibility = View.VISIBLE
+        progressBar.isVisible(true)
+        textDateInfo.isVisible(true)
         progressBar.indeterminateDrawable
             .setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimary), PorterDuff.Mode.SRC_IN)
     }
@@ -236,7 +237,7 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
-                progressBar.visibility = View.GONE
+                progressBar.isVisible(false)
             }
 
         })

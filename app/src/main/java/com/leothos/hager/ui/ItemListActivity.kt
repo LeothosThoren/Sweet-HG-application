@@ -15,6 +15,7 @@ import com.leothos.hager.adapters.FavoriteItemRecyclerViewAdapter
 import com.leothos.hager.adapters.ItemRecyclerViewAdapter
 import com.leothos.hager.data.DataManager
 import com.leothos.hager.injections.Injection
+import com.leothos.hager.isVisible
 import com.leothos.hager.model.api.ApiProductItem
 import com.leothos.hager.model.entities.FavoriteProduct
 import com.leothos.hager.toast
@@ -155,7 +156,7 @@ class ItemListActivity : AppCompatActivity(),
 
     private fun displayFavoriteItemFromMainActivity(bool: Boolean) {
         if (bool) {
-            listFab.visibility = View.GONE
+            listFab.isVisible(false)
             toolbar.title = getString(R.string.toolbar_title_favorites)
             getFavoriteProductFromDB()
         }
