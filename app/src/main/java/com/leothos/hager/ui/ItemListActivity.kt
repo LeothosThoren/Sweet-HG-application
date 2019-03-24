@@ -50,7 +50,7 @@ class ItemListActivity : AppCompatActivity(),
 
 
         /**
-         * Retrieve the user choice from main activity, only a boolean
+         * Retrieve the user choice from main activity
          * */
         areFavoritesAvailable = intent.getBooleanExtra(FAVORITE_AVAILABLE, false)
 
