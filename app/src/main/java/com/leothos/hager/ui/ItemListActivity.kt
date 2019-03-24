@@ -44,6 +44,8 @@ class ItemListActivity : AppCompatActivity(),
         setContentView(R.layout.activity_item_list)
         //First update of the toolbar title
         updateTitle(getString(R.string.toolbar_title_list_of_products))
+        // Show the Up button in the action bar.
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         if (item_detail_container != null) {
             twoPane = true
