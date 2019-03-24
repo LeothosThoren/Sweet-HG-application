@@ -17,13 +17,10 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import com.leothos.hager.*
 import com.leothos.hager.data.DataManager
 import com.leothos.hager.model.api.ApiProductItem
 import com.leothos.hager.model.api.ApiProductsResponse
-import com.leothos.hager.view_models.ProductsViewModel
 import com.leothos.hager.web_services.Api
 import com.leothos.hager.web_services.RetrofitClient
 import kotlinx.android.synthetic.main.activity_main.*
@@ -40,7 +37,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var spinnerAdapter: ArrayAdapter<CharSequence>
     private lateinit var selectionDateListener: DatePickerDialog.OnDateSetListener
     private lateinit var calendar: Calendar
-    private lateinit var model: ProductsViewModel
     //Default values if the user click directly on Ok button
     private var countryValue = DEFAULT_COUNTRY_VALUE
     private var lastSyncValue = DEFAULT_LAST_SYNC_VALUE
@@ -59,7 +55,6 @@ class MainActivity : AppCompatActivity() {
         configureSpinner()
         datePicker.setOnClickListener { configureDatePickerDialog() }
         openCalendarWidget()
-        configureViewModel()
     }
 
 
@@ -206,14 +201,6 @@ class MainActivity : AppCompatActivity() {
             selectionDateListener, year, month, day
         )
         dateDialog.show()
-    }
-
-    // Configure viewModel in order to fetch data once and prevent multiple call
-    private fun configureViewModel() {
-        model = ViewModelProviders.of(this).get(ProductsViewModel::class.java)
-        model.getProducts(countryValue, lastSyncValue).observe(this, Observer<ApiProductsResponse> {
-            Log.d(TAG, it.data.toString())
-        })
     }
 
     // --------------
